@@ -1,0 +1,91 @@
+import java.util.*;
+
+class Item {
+    String name;
+    double price;
+    int qty;
+
+    Item(String n, double p, int q) {
+        name = n;
+        price = p;
+        qty = q;
+    }
+
+    double total() {
+        return price * qty;
+    }
+}
+
+public class OnlineShoppingSystem {
+
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+        ArrayList<Item> cart = new ArrayList<>();
+        int ch;
+
+        do {
+            System.out.println("\n1.Add 2.View 3.Checkout 4.Exit");
+            ch = sc.nextInt();
+
+            try {
+                switch (ch) {
+
+                    case 1:
+                        System.out.print("Name: ");
+                        String name = sc.next();
+                        System.out.print("Price: ");
+                        double price = Double.parseDouble(sc.next());
+                        System.out.print("Qty: ");
+                        int qty = Integer.parseInt(sc.next());
+
+                        cart.add(new Item(name, price, qty));
+                        System.out.println("Item Added");
+                        break;
+
+                    case 2:
+                        double total = 0;
+                        for (Item i : cart) {
+                            System.out.println(i.name + " " + i.qty + " " + i.total());
+                            total += i.total();
+                        }
+                        System.out.println("Cart Total: " + total);
+                        break;
+
+                    case 3:
+                        total = 0;
+                        for (Item i : cart)
+                            total += i.total();
+
+                        System.out.println("Total Amount: " + total);
+                        System.out.print("Enter Payment: ");
+                        double pay = Double.parseDouble(sc.next());
+
+                        if (pay < total)
+                            System.out.println("Insufficient Payment");
+                        else {
+                            System.out.println("Payment Successful. Change: " + (pay - total));
+                            cart.clear();
+                        }
+                        break;
+
+                    case 4:
+                        System.out.println("Thank You!");
+                        break;
+
+                    default:
+                        System.out.println("Invalid Choice");
+                }
+            }
+            catch (NumberFormatException e) {
+                System.out.println("Invalid number input!");
+            }
+            finally {
+                System.out.println("Operation Finished");
+            }
+
+        } while (ch != 4);
+
+        sc.close();
+    }
+}
