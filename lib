@@ -1,0 +1,91 @@
+import java.util.ArrayList;
+import java.util.Scanner;
+
+class Book {
+    int id;
+    String title;
+    boolean issued;
+    static int totalBooks = 0;
+
+    Book(int id, String title) {
+        this.id = id;
+        this.title = title;
+        this.issued = false;
+        totalBooks++;
+    }
+
+    void issue() {
+        if (!issued) {
+            issued = true;
+            System.out.println("Book Issued");
+        } else {
+            System.out.println("Already Issued");
+        }
+    }
+
+    void returnBook() {
+        if (issued) {
+            issued = false;
+            System.out.println("Book Returned");
+        } else {
+            System.out.println("Not Issued Yet");
+        }
+    }
+
+    void display() {
+        System.out.println(id + "  " + title + "  " + (issued ? "Issued" : "Available"));
+    }
+
+    static void showTotal() {
+        System.out.println("Total Books: " + totalBooks);
+    }
+}
+
+public class LibraryManagementSystem {
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        ArrayList<Book> list = new ArrayList<>();
+        int ch;
+
+        do {
+            System.out.println("\n1.Add Book  2.Issue  3.Return  4.Display  5.Total  6.Exit");
+            ch = sc.nextInt();
+
+            switch (ch) {
+                case 1:
+                    System.out.print("ID: ");
+                    int id = sc.nextInt();
+                    System.out.print("Title: ");
+                    String t = sc.next();
+                    list.add(new Book(id, t));
+                    break;
+
+                case 2:
+                    System.out.print("Enter ID: ");
+                    id = sc.nextInt();
+                    for (Book b : list)
+                        if (b.id == id) b.issue();
+                    break;
+
+                case 3:
+                    System.out.print("Enter ID: ");
+                    id = sc.nextInt();
+                    for (Book b : list)
+                        if (b.id == id) b.returnBook();
+                    break;
+
+                case 4:
+                    for (Book b : list) b.display();
+                    break;
+
+                case 5:
+                    Book.showTotal();
+                    break;
+            }
+
+        } while (ch != 6);
+
+        sc.close();
+    }
+}
