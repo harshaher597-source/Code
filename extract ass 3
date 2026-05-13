@@ -1,0 +1,98 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+----
+# Load dataset
+df = pd.read_csv("/content/engine_failure_dataset - engine_failure_dataset.csv")
+
+print("Dataset Loaded Successfully!\n")
+print("Shape of dataset:", df.shape)
+----
+# Select numeric columns
+numeric_cols = df.select_dtypes(include=np.number).columns
+X = df[numeric_cols]
+
+print("\nNumeric Features:")
+print(numeric_cols)
+----
+# Fill missing values with mean
+X = X.fillna(X.mean())
+----
+# Standardize the data
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+----
+# Apply PCA
+pca = PCA()
+X_pca = pca.fit_transform(X_scaled)
+----
+# Explained variance ratio
+explained_variance = pca.explained_variance_ratio_
+
+print("\nExplained Variance Ratio:")
+print(explained_variance)
+-----
+# Plot Explained Variance
+plt.figure(figsize=(8, 5))
+plt.plot(
+    range(1, len(explained_variance) + 1),
+    explained_variance,
+    marker='o'
+)
+
+plt.xlabel("Principal Components")
+plt.ylabel("Explained Variance Ratio")
+plt.title("Explained Variance by Components")
+plt.grid(True)
+plt.show()
+-----
+# Cumulative explained variance
+cumulative_variance = np.cumsum(explained_variance)
+
+# Plot Cumulative Variance
+plt.figure(figsize=(8, 5))
+plt.plot(
+    range(1, len(cumulative_variance) + 1),
+    cumulative_variance,
+    marker='o'
+)
+
+plt.xlabel("Principal Components")
+plt.ylabel("Cumulative Variance")
+plt.title("Cumulative Explained Variance")
+plt.grid(True)
+plt.show()
+--------
+# Select components covering 95% variance
+pca_optimal = PCA(n_components=0.95)
+X_reduced = pca_optimal.fit_transform(X_scaled)
+
+print(
+    "\nNumber of Components selected (95% variance):",
+    pca_optimal.n_components_
+)
+--------
+# Create PCA DataFrame
+pca_columns = [f"PC{i+1}" for i in range(X_reduced.shape[1])]
+
+df_pca = pd.DataFrame(X_reduced, columns=pca_columns)
+
+print("\nPCA Transformed Data (First 5 Rows):")
+print(df_pca.head())
+--------
+# Scatter plot of first two principal components
+if X_reduced.shape[1] >= 2:
+    plt.figure(figsize=(8, 6))
+
+    plt.scatter(df_pca["PC1"], df_pca["PC2"])
+
+    plt.xlabel("PC1")
+    plt.ylabel("PC2")
+    plt.title("PCA Scatter Plot (PC1 vs PC2)")
+
+    plt.grid(True)
+    plt.show()
