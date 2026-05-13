@@ -1,0 +1,39 @@
+import pandas as pd
+import numpy as np
+data=pd.read_csv('SE AIML Practical No 7.txt', sep='\t')
+data.head(10)
+-------
+import numpy as np
+# 1. Define states of the manufacturing process
+states = ["Drilling", "Boring", "Milling"]
+
+# 2. Define the transition probability components
+# Constraints:
+# - Each value <= 1
+# - Sum of each row must equal 1
+
+transition_matrix_data = [
+    [0.7, 0.2, 0.1],   # Row 1: Drilling transitions
+    [0.1, 0.8, 0.1],   # Row 2: Boring transitions
+    [0.2, 0.3, 0.5]    # Row 3: Milling transitions
+]
+
+# Convert to NumPy array
+P = np.array(transition_matrix_data)
+
+# Validation check to confirm constraints are met
+for i, row in enumerate(P):
+
+    row_sum = np.sum(row)
+
+    print(f"Row {i+1} ({states[i]}) sum: {row_sum}")
+
+    assert np.isclose(row_sum, 1.0), \
+        f"Error: Row {i+1} does not sum to 1!"
+
+    assert np.all(row <= 1.0), \
+        f"Error: Values in Row {i+1} exceed 1!"
+
+# Display validated matrix
+print("\n--- Validated Transition Matrix (P) ---")
+print(P)
