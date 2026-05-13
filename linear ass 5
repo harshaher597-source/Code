@@ -1,0 +1,143 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+from google.colab import files
+
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import (
+    mean_absolute_error,
+    mean_squared_error,
+    r2_score
+)
+
+# Upload dataset
+uploaded = files.upload()
+-------
+# Load dataset
+df = pd.read_csv('insurance - insurance.csv')
+
+# Display first 5 rows
+print(df.head())
+------
+# Dataset information
+print("\nDataset Shape:")
+print(df.shape)
+
+print("\nDataset Information:")
+print(df.info())
+
+print("\nMissing Values:")
+print(df.isnull().sum())
+
+print("\nStatistical Summary:")
+print(df.describe())
+------
+# Label Encoding
+le = LabelEncoder()
+
+df['sex'] = le.fit_transform(df['sex'])        # female=0, male=1
+df['smoker'] = le.fit_transform(df['smoker'])  # no=0, yes=1
+df['region'] = le.fit_transform(df['region'])  # encoded values 0-3
+
+# Display encoded dataset
+print("\nDataset After Encoding:")
+print(df.head())
+--------
+# Features and Target
+X = df[['age', 'sex', 'bmi', 'children', 'smoker', 'region']]
+y = df['charges']
+
+# Feature Scaling
+scaler = StandardScaler()
+X = scaler.fit_transform(X)
+
+# Train-Test Split
+X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y,
+    test_size=0.2,
+    random_state=42
+)
+
+print("\nTrain size:", X_train.shape)
+print("Test size:", X_test.shape)
+--------
+# Linear Regression Model
+model = LinearRegression()
+
+model.fit(X_train, y_train)
+
+print("\nModel Trained Successfully!")
+----------
+# Predictions
+y_pred = model.predict(X_test)
+
+# Performance Metrics
+mae = mean_absolute_error(y_test, y_pred)
+mse = mean_squared_error(y_test, y_pred)
+rmse = np.sqrt(mse)
+r2 = r2_score(y_test, y_pred)
+
+print("\nPerformance Analysis:")
+print("------------------------")
+
+print(f"MAE (Mean Absolute Error)  : {mae:.2f}")
+print(f"MSE (Mean Squared Error)  : {mse:.2f}")
+print(f"RMSE (Root Mean Sq Error) : {rmse:.2f}")
+print(f"R2 Score (Accuracy)       : {r2:.2f}")
+------
+# Actual vs Predicted Scatter Plot
+plt.figure(figsize=(8, 5))
+
+plt.scatter(
+    y_test,
+    y_pred,
+    color='steelblue',
+    alpha=0.5
+)
+
+plt.plot(
+    [y_test.min(), y_test.max()],
+    [y_test.min(), y_test.max()],
+    color='red',
+    linewidth=2
+)
+
+plt.xlabel('Actual Charges')
+plt.ylabel('Predicted Charges')
+
+plt.title('Actual vs Predicted Insurance Charges')
+
+plt.show()
+---------
+# Actual vs Predicted Line Plot (First 10 Samples)
+plt.figure(figsize=(10, 5))
+
+plt.plot(
+    range(10),
+    list(y_test)[:10],
+    label='Actual',
+    color='steelblue',
+    marker='o'
+)
+
+plt.plot(
+    range(10),
+    list(y_pred)[:10],
+    label='Predicted',
+    color='coral',
+    marker='s'
+)
+
+plt.xlabel('Sample Index')
+plt.ylabel('Charges')
+
+plt.title('Actual vs Predicted (First 10 Samples)')
+
+plt.legend()
+
+plt.show()
