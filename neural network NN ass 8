@@ -1,0 +1,88 @@
+# Import required libraries
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras import layers
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Input and output data
+X = np.array([[1, 2, 3, 4]], dtype=float)
+Y = np.array([[0, 1, 0, 1]], dtype=float)
+
+# Define the model
+model = keras.Sequential([
+    layers.Input(shape=(4,)),
+    layers.Dense(4, activation='relu'),
+    layers.Dense(4, activation='relu'),
+    layers.Dense(4, activation='relu')
+])
+
+# Compile optimizer and loss
+optimizer = keras.optimizers.SGD(learning_rate=0.01)
+loss_fn = keras.losses.MeanSquaredError()
+
+# Manually initialize weights and biases
+for layer in model.layers:
+
+    w_shape, b_shape = layer.get_weights()[0].shape, layer.get_weights()[1].shape
+
+    W_init = np.full(w_shape, 0.2)
+    b_init = np.full(b_shape, 0.1)
+
+    layer.set_weights([W_init, b_init])
+
+# Training loop
+loss_history = []
+epochs = 5
+
+for epoch in range(epochs):
+
+    with tf.GradientTape() as tape:
+
+        predictions = model(X, training=True)
+
+        loss = loss_fn(Y, predictions)
+
+    grads = tape.gradient(loss, model.trainable_variables)
+
+    optimizer.apply_gradients(zip(grads, model.trainable_variables))
+
+    loss_history.append(loss.numpy())
+
+# Plot loss curve
+plt.style.use('seaborn-v0_8')
+
+plt.figure(figsize=(8, 5))
+
+plt.plot(
+    range(1, epochs + 1),
+    loss_history,
+    marker='o'
+)
+
+plt.title('Training Loss Curve')
+
+plt.xlabel('Epoch')
+plt.ylabel('Mean Squared Error Loss')
+
+plt.grid(True)
+
+plt.xticks(range(1, epochs + 1))
+
+plt.savefig('loss_curve.png')
+
+plt.show()
+
+# Final target values
+print("\nFinal Target Y:\n", Y)
+
+# Display weights and biases
+print("\nWeights and Biases after 5 Epochs of Training:")
+
+for i, layer in enumerate(model.layers):
+
+    weights, biases = layer.get_weights()
+
+    print(f"\nLayer {i+1} Weights:\n", weights)
+
+    print(f"Layer {i+1} Biases:\n", biases)
