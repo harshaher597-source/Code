@@ -1,3 +1,8 @@
+import pandas as pd
+import numpy as np
+data=pd.read_csv('NN.txt', sep='\t')
+data.head(10)
+-------
 # Import required libraries
 import tensorflow as tf
 from tensorflow import keras
