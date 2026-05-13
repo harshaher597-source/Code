@@ -1,0 +1,90 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+----
+# Set seaborn style
+sns.set(style="whitegrid")
+----
+# Load dataset
+df = pd.read_csv("engine_failure_dataset - engine_failure_dataset.csv")
+print("\nDataset Loaded Successfully!\n")
+----
+# Q1: Dataset Shape
+print("Q1: Dataset Shape")
+print("Rows (Data Points):", df.shape[0])
+print("Columns (Attributes):", df.shape[1])
+----
+# Q2: Data Types of Each Attribute
+print("\nQ2: Data Types of Each Attribute")
+print(df.dtypes)
+----
+# Separate numeric and categorical columns
+numeric_cols = df.select_dtypes(include=np.number).columns
+categorical_cols = df.select_dtypes(exclude=np.number).columns
+
+# Q3: Number of Numeric and Categorical Attributes
+print("\nQ3:")
+print("Number of Numeric Attributes:", len(numeric_cols))
+print("Number of Categorical Attributes:", len(categorical_cols))
+----
+# Fill missing values in numeric columns with mean
+df[numeric_cols] = df[numeric_cols].fillna(df[numeric_cols].mean())
+
+print("\nMissing Values After Filling:")
+print(df.isnull().sum())
+----
+# Q4: Statistical Measures
+print("\nQ4: Statistical Measures")
+
+stats_df = pd.DataFrame({
+    'Count': df[numeric_cols].count(),
+    'Mean': df[numeric_cols].mean(),
+    'Median': df[numeric_cols].median(),
+    'Mode': df[numeric_cols].mode().iloc[0],
+    'Q1': df[numeric_cols].quantile(0.25),
+    'Q2 (Median)': df[numeric_cols].quantile(0.50),
+    'Min': df[numeric_cols].min(),
+    'Max': df[numeric_cols].max(),
+    'Std Dev': df[numeric_cols].std()
+})
+
+print(stats_df)
+----
+# Q5: Boxplots
+print("\nQ5: Boxplots")
+
+plt.figure(figsize=(12, 6))
+df[numeric_cols].boxplot()
+plt.xticks(rotation=45)
+plt.title("Boxplot of Numeric Attributes")
+plt.tight_layout()
+plt.show()
+----
+# Q6: Histograms
+print("\nQ6: Histograms")
+
+df[numeric_cols].hist(figsize=(12, 10))
+plt.tight_layout()
+plt.show()
+----
+# Q7: Pairplot
+print("\nQ7: Pairplot")
+
+sns.pairplot(df[numeric_cols])
+plt.show()
+----
+# Q8: Correlation Matrix
+print("\nQ8: Correlation Matrix")
+
+corr_matrix = df[numeric_cols].corr()
+print(corr_matrix)
+----
+# Q9: Heatmap
+print("\nQ9: Heatmap")
+
+plt.figure(figsize=(10, 8))
+sns.heatmap(corr_matrix, annot=True, cmap='coolwarm')
+plt.title("Correlation Heatmap")
+plt.tight_layout()
+plt.show()
